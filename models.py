@@ -18,6 +18,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    employeeid = db.Column(db.Integer, unique=True)  # New column
     active = db.Column(db.Boolean)
     userName = db.Column(db.String())
     givenName = db.Column(db.String())
@@ -36,9 +37,11 @@ class User(db.Model):
     locale = db.Column(db.String())
     externalId = db.Column(db.String())
     password = db.Column(db.String())
+    department = db.Column(db.String())
 
     def __init__(
         self,
+        employeeid,
         active,
         userName,
         givenName,
@@ -51,8 +54,10 @@ class User(db.Model):
         locale,
         externalId,
         password,
+        department
     ):
         self.active = active
+        self.employeeid = employeeid
         self.userName = userName
         self.givenName = givenName
         self.middleName = middleName
@@ -64,6 +69,7 @@ class User(db.Model):
         self.locale = locale
         self.externalId = externalId
         self.password = password
+        self.department = department
 
     def __repr__(self):
         return "<id {}>".format(self.id)
@@ -76,6 +82,7 @@ class User(db.Model):
         return {
             "schemas": [
                 "urn:ietf:params:scim:schemas:core:2.0:User",
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
             ],
             "id": self.id,
             "userName": self.userName,
@@ -92,11 +99,14 @@ class User(db.Model):
                 }
             ],
             "displayName": self.displayName,
+            "employeeid": self.employeeid,  # Include employeeID
+            "department": self.department,  # Include department
             "locale": self.locale,
             "externalId": self.externalId,
             "active": self.active,
             "groups": groups,
             "meta": {"resourceType": "User"},
+            
         }
 
 

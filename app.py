@@ -12,7 +12,7 @@ def create_app():
     Implemented as a factory method to avoid a circular import error.
     """
     app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://localhost/scim"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:Sommartid2023@localhost/scim"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
     return app
@@ -112,7 +112,7 @@ def create_user():
     password = request.json.get("password")
     schemas = request.json.get("schemas")
     userName = request.json.get("userName")
-
+    department=request.json.get("department")
     existing_user = User.query.filter_by(userName=userName).first()
 
     if existing_user:
@@ -141,6 +141,7 @@ def create_user():
                 familyName=familyName,
                 password=password,
                 userName=userName,
+                department=department,
             )
             db.session.add(user)
 
@@ -192,7 +193,7 @@ def update_user(user_id):
         user.password = request.json.get("password")
         user.schemas = request.json.get("schemas")
         user.userName = request.json.get("userName")
-
+        user.department=request.json.get("department")
         db.session.commit()
         return make_response(jsonify(user.serialize()), 200)
 
